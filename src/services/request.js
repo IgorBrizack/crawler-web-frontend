@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: `http://0.0.0.0:${process.env.REACT_APP_API_PORT || '8000'}`,
+  baseURL: `https://crawler-challenge-backend-api.onrender.com`,
 });
 
 export const getData = async (endpoint) => {
