@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getData } from '../services/request'
 import gitHub from '../github.png'
+import loadingImg from '../loading.gif'
 import '../bootstrap.min.css'
 
 export default function HomePage (){
@@ -8,9 +9,11 @@ export default function HomePage (){
   const [website, setWebSite] = useState("todas")
   const [category, setCategory] = useState("televisao")
   const [inputSearch, setInputSearch] = useState()
+  const [loading, setLoading] = useState(false)
 
   const fetchAPI = async() => {
     let product_type = inputSearch
+    setLoading(true)
 
     if(inputSearch && website !== 'todas') {
       const result = await getData(`/product/get_products/${website}/${product_type}`, )
@@ -18,7 +21,8 @@ export default function HomePage (){
         input => (input.value = "")
       );
       setInputSearch("")
-      return setData(result.data[0])
+      setData(result.data[0])
+      return setLoading(false)
     }
 
     if(inputSearch && website === 'todas') {
@@ -32,20 +36,23 @@ export default function HomePage (){
       );
 
       setInputSearch("")
-
-      return setData([...resultMeli.data[0], ...resultBuscape.data[0]])
+      setData([...resultMeli.data[0], ...resultBuscape.data[0]])
+      return setLoading(false)
 
     } else if (!inputSearch && website !== 'todas') {
 
       const result = await getData(`/product/get_products/${website}/${category}`)
-      return setData(result.data[0])
+      setData(result.data[0])
+      
+      return setLoading(false)
 
     } else if (!inputSearch && website === 'todas') {
       const resultMeli = await getData(`/product/get_products/mercadolivre/${category}`)
       
       const resultBuscape = await getData(`/product/get_products/buscape/${category}`)
       setInputSearch("")
-      return setData([...resultMeli.data[0], ...resultBuscape.data[0]])
+      setData([...resultMeli.data[0], ...resultBuscape.data[0]])
+      return setLoading(false)
     }
   }
 
@@ -113,53 +120,64 @@ export default function HomePage (){
         
       </div>
 
-      <div style={{
-        display:"flex",
-        flexWrap:"wrap",
-        alignContent:"space-evenly",
-        justifyContent: "center",
-        backgroundColor: "gray"
-      }}>
-        {data.length > 0 && (data.map((e) => {
-          return (
-          <div
-            key={e.id} style={{
-              padding: "5px",
-              width:"300px",
-              borderRadius: '5px',
-              height:"450px",
-              margin:"5px",
-              display:"flex",
-              flexDirection:"column",
-              alignContent:"space-evenly",
-              alignItems:"center",
-              justifyContent: "center",
-              backgroundColor: "white"
-            }}>
-            <h2 style={{fontSize:"20px", textAlign:"center"}}>{e.description}</h2>
-            <p>{e.price}</p>
-            <img style={{
-              width:"120px",
-              height:"180px",              
-            }}
-            src={e.image_link}
-            alt={e.title}/>
-            <button style={{
-                marginTop: '5px',
-                borderRadius: '5px',
-                fontWeight: 'bold'
-            }} type='button'>
-              <a 
-                rel="noreferrer" 
-                target='_blank' 
-                href={e.external_link} 
-                style={{textDecoration:"none", color: "black", fontSize: "15px"}}
-              >Comprar</a>
-            </button> 
+      <div>
+        {loading ? (
+          <img style={{
+            width: '100%',
+            height: '100%'
+          }} alt='loading' src={loadingImg}/>
+        ) : (
+          <div style={{
+            display:"flex",
+            flexWrap:"wrap",
+            alignContent:"space-evenly",
+            justifyContent: "center",
+            backgroundColor: "gray"
+          }}>
+            {data.length > 0 && (data.map((e) => {
+              return (
+              <div
+                key={e.id} style={{
+                  padding: "5px",
+                  width:"300px",
+                  borderRadius: '5px',
+                  height:"450px",
+                  margin:"5px",
+                  display:"flex",
+                  flexDirection:"column",
+                  alignContent:"space-evenly",
+                  alignItems:"center",
+                  justifyContent: "center",
+                  backgroundColor: "white"
+                }}>
+                <h2 style={{fontSize:"20px", textAlign:"center"}}>{e.description}</h2>
+                <p>{e.price}</p>
+                <img style={{
+                  width:"120px",
+                  height:"180px",              
+                }}
+                src={e.image_link}
+                alt={e.title}/>
+                <button style={{
+                    marginTop: '5px',
+                    borderRadius: '5px',
+                    fontWeight: 'bold'
+                }} type='button'>
+                  <a 
+                    rel="noreferrer" 
+                    target='_blank' 
+                    href={e.external_link} 
+                    style={{textDecoration:"none", color: "black", fontSize: "15px"}}
+                  >Comprar</a>
+                </button> 
+              </div>
+              )
+            }))}      
           </div>
-          )
-        }))}      
+        )}
       </div>
+
+      
     </>
   )
 }
