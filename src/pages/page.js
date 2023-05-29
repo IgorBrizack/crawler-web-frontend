@@ -5,7 +5,7 @@ import '../bootstrap.min.css'
 export default function HomePage (){
   const [data, setData] = useState([])
   const [website, setWebSite] = useState("todas")
-  const [category, setCategory] = useState("televisão")
+  const [category, setCategory] = useState("televisao")
   const [inputSearch, setInputSearch] = useState()
   
 
